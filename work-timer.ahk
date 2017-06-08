@@ -14,6 +14,8 @@
     IniRead, Program9, work-timer.ini, Data, Program9, %A_Space%
     IniRead, MoreSlots, work-timer.ini, Data, MoreSlots, 0
     IniRead, LastTime, work-timer.ini, Data, LastTime, 00:00:00
+    IniRead, xSaved, work-timer.ini, Data, xSaved, 0
+    IniRead, ySaved, work-timer.ini, Data, ySaved, 0
     IniWrite, %ColorAlert%, work-timer.ini, Data, ColorAlert
     IniWrite, %OnColor%, work-timer.ini, Data, OnColor
     IniWrite, %OffColor%, work-timer.ini, Data, OffColor
@@ -29,6 +31,8 @@
     IniWrite, %Program9%, work-timer.ini, Data, Program9
     IniWrite, %MoreSlots%, work-timer.ini, Data, MoreSlots
     IniWrite, %LastTime%, work-timer.ini, Data, LastTime
+    IniWrite, %xSaved%, work-timer.ini, Data, xSaved
+    IniWrite, %ySaved%, work-timer.ini, Data, ySaved
 
 ;Move window by dragging anywhere on the GUI
     ;When left mouse down (WM_LBUTTONDOWN) is detected, call MoveGUI function
@@ -79,28 +83,30 @@ GuiContextMenu:
     if(H = 99 && M = 59 && S = 59){
     }
     Menu, contextMenu, Add, Resume previous time, Prev
+    Menu, contextMenu, Add, Go to saved position, GoToPos
     Menu, contextMenu, Add
-    programDisplay := processProgram(Program1, 20)
+    programDisplay := processProgram(Program1, 30)
     Menu, contextMenu, Add, Program 1`: %programDisplay%, SetProgram1
-    programDisplay := processProgram(Program2, 20)
+    programDisplay := processProgram(Program2, 30)
     Menu, contextMenu, Add, Program 2`: %programDisplay%, SetProgram2
-    programDisplay := processProgram(Program3, 20)
+    programDisplay := processProgram(Program3, 30)
     Menu, contextMenu, Add, Program 3`: %programDisplay%, SetProgram3
     if(MoreSlots = 1){
-        programDisplay := processProgram(Program4, 20)
+        programDisplay := processProgram(Program4, 30)
         Menu, contextMenu, Add, Program 4`: %programDisplay%, SetProgram4
-        programDisplay := processProgram(Program5, 20)
+        programDisplay := processProgram(Program5, 30)
         Menu, contextMenu, Add, Program 5`: %programDisplay%, SetProgram5
-        programDisplay := processProgram(Program6, 20)
+        programDisplay := processProgram(Program6, 30)
         Menu, contextMenu, Add, Program 6`: %programDisplay%, SetProgram6
-        programDisplay := processProgram(Program3, 20)
+        programDisplay := processProgram(Program7, 30)
         Menu, contextMenu, Add, Program 7`: %programDisplay%, SetProgram7
-        programDisplay := processProgram(Program3, 20)
+        programDisplay := processProgram(Program8, 30)
         Menu, contextMenu, Add, Program 8`: %programDisplay%, SetProgram8
-        programDisplay := processProgram(Program3, 20)
+        programDisplay := processProgram(Program9, 30)
         Menu, contextMenu, Add, Program 9`: %programDisplay%, SetProgram9
     }
     Menu, contextMenu, Add
+    Menu, contextMenu, Add, Save current position, SavePos
     Menu, contextMenu, Add, Timeout`: %IdleTime%,  SetTimeout
     Menu, contextMenu, Add
     Menu, contextMenu, Add, Color Alert, ChangeColor
@@ -117,13 +123,25 @@ GuiContextMenu:
 ;Function helps create menu items that display process paths
     processProgram(program, len){
         if(StrLen(program) >= len){
-            StringTrimLeft, program, program, 20
+            removeLen := StrLen(program) - len
+            StringTrimLeft, program, program, removeLen
             Return "... " . program
         }
         if(program = "")
             Return "(Not set)"
+        MsgBox, %program%
         Return program
     }
+
+GoToPos:
+    WinMove, A, , xSaved, ySaved
+    Return
+
+SavePos:
+    WinGetPos, xSaved, ySaved, wMain, hMain, A
+    IniWrite, %xSaved%, work-timer.ini, Data, xSaved
+    IniWrite, %ySaved%, work-timer.ini, Data, ySaved
+    Return
 
 ;Reset timer if maxed or otherwise
 ResetTimer:
