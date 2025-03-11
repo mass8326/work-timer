@@ -5,11 +5,11 @@ use rfd::AsyncFileDialog;
 use rust_decimal::{prelude::ToPrimitive, Decimal};
 
 use crate::{
-    state::Config,
     app::{
         timer::{TimerMessage, View},
         Daemon,
     },
+    state::Config,
 };
 
 use super::{Message, UpdateFrom};

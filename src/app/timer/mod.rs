@@ -12,6 +12,7 @@ use iced::widget::container;
 use iced::widget::{center, mouse_area};
 use iced::window::Level;
 use iced::{window, Border, Color, Element, Length, Size, Subscription, Task};
+use log::error;
 use rust_decimal::prelude::*;
 use widget::{clock, danger_controls, safe_controls};
 
@@ -96,7 +97,7 @@ impl Timer {
             subscriptions.push(ticker);
         }
         match Platform::get_activity_stream(Duration::from_millis(500)) {
-            Err(err) => println!("{err:#?}"),
+            Err(err) => error!("{err:?}"),
             Ok(stream) => {
                 let sub = Subscription::run_with_id("activity", stream).map(TimerMessage::Activity);
                 subscriptions.push(sub);

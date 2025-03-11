@@ -7,6 +7,7 @@ use std::{
 use derive_more::From;
 use directories::ProjectDirs;
 use iced::Point;
+use log::warn;
 use rust_decimal::Decimal;
 use serde::{
     de::{self, Visitor},
@@ -41,9 +42,7 @@ impl Config {
                         .and_then(|file| file.parent())
                         .is_some_and(|parent| fs::create_dir_all(parent).is_err());
                     if assert_dir_failed {
-                        println!(
-                            "Could not create default directory! Your time will not be saved."
-                        );
+                        warn!("Could not create default directory! Your time will not be saved.");
                     }
                     Self::default()
                 });

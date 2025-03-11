@@ -1,6 +1,6 @@
 [package]
 name = "work-timer"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2021"
 repository = "https://github.com/mass8326/work-timer"
 license = "GPL-2.0-or-later"
@@ -30,6 +30,8 @@ windows = { version = "0.60.0", features = [
 windows-core = "0.60.1"
 rust_decimal = { version = "1.36.0", features = ["serde-float"] }
 rfd = "0.15.2"
+log = "0.4.26"
+flexi_logger = "0.29.8"
 
 [lints.clippy]
 pedantic = { level = "deny", priority = -1 }

@@ -1,6 +1,13 @@
+## Version 0.2.1 (2025-03-20)
+
+### Changed
+
+- Write debug logs to the filesystem in addition to stdout.
+- Prevent console window from appearing on Windows operating systems.
+
 ## Version 0.2.0 (2025-03-04)
 
-Previously, WorkTimer was written with [AutoHotkey](https://www.autohotkey.com) and was based on [an app by Neil Cicierega](http://neilblr.com/post/58757345346). The original code, though posted publically, was provided without a license.
+Previously, WorkTimer was written with [AutoHotkey](https://www.autohotkey.com) and was based on [an app by Neil Cicierega](http://neilblr.com/post/58757345346). The original code, though posted publicly, was provided without a license.
 
 This version is **_completely rewritten from scratch with Rust_**, allowing the project to be published with an open source license.
 

@@ -2,9 +2,10 @@ use std::path::PathBuf;
 
 use iced::Task;
 use iced_runtime::window;
+use log::error;
 use rfd::AsyncFileDialog;
 
-use crate::{state::Config, app::Daemon};
+use crate::{app::Daemon, state::Config};
 
 use super::{Message, UpdateFrom};
 
@@ -42,7 +43,7 @@ impl UpdateFrom<SaveMessage, Message> for Daemon {
                         ..save_data.clone()
                     };
                     if let Err(err) = config.save(&path) {
-                        println!("Error occured while saving: {err:#?}");
+                        error!("Error occured while saving: {err:#?}");
                     };
                     Task::none()
                 })
