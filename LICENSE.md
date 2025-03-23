@@ -273,11 +273,11 @@ YOU OR THIRD PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER
 PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGES.
 
-## Standard License Header
+### END OF TERMS AND CONDITIONS
 
-### WorkTimer
+SPDX-License-Identifier: GPL-2.0-or-later
 
-Copyright (C) 2025 Magnus Reyes
+Copyright © 2025 Magnus Reyes
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software
