@@ -26,7 +26,7 @@ impl Settings {
         Self { windows, whitelist }
     }
 
-    pub fn view(&self) -> Element<SettingsMessage> {
+    pub fn view(&self) -> Element<'_, SettingsMessage> {
         let entries = column(self.windows.iter().filter_map(|info| {
             let path = PathBuf::from(info.path.clone());
             let name = path.file_name()?;

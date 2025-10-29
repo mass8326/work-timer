@@ -71,7 +71,7 @@ impl UpdateFrom<TimerMessage, Message> for Timer {
                 }
                 self.clock.on();
             }
-        };
+        }
         Task::none()
     }
 }

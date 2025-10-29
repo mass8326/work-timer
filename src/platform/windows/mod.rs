@@ -24,7 +24,7 @@ use windows::{
         UI::WindowsAndMessaging::GetForegroundWindow,
     },
 };
-use winsafe::{prelude::Handle, EnumWindows, GetLastInputInfo};
+use winsafe::{EnumWindows, GetLastInputInfo};
 
 pub struct Platform;
 
@@ -46,11 +46,11 @@ impl Platform {
                 handle,
                 PROCESS_NAME_WIN32,
                 PSTR::from_raw(str.as_mut_ptr()),
-                &mut len,
+                &raw mut len,
             );
             if res.is_err() {
                 return None;
-            };
+            }
             let name = CStr::from_ptr(str.as_ptr().cast());
             let path = OsStr::from_encoded_bytes_unchecked(name.to_bytes()).to_owned();
             Some(WindowInfo { pid, path })
@@ -89,7 +89,7 @@ impl PlatformAPI for Platform {
                 let window = HWND(*hwnd.as_mut());
                 if let Some(info) = Self::get_window_info(window) {
                     map.insert(info.path.clone(), info);
-                };
+                }
             }
             true
         });

@@ -102,11 +102,11 @@ impl Timer {
                 let sub = Subscription::run_with_id("activity", stream).map(TimerMessage::Activity);
                 subscriptions.push(sub);
             }
-        };
+        }
         Subscription::batch(subscriptions)
     }
 
-    pub fn view(&self) -> Element<Message> {
+    pub fn view(&self) -> Element<'_, Message> {
         mouse_area(
             center(match self.view {
                 View::Clock => clock(self.clock.get_elapsed()),

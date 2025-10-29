@@ -85,7 +85,7 @@ impl Daemon {
         }
     }
 
-    pub fn view(&self, window_id: window::Id) -> Element<Message> {
+    pub fn view(&self, window_id: window::Id) -> Element<'_, Message> {
         if let Some(settings_id) = self.settings_id {
             if settings_id == window_id {
                 return self.settings.view().map(Into::into);

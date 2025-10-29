@@ -44,7 +44,7 @@ impl UpdateFrom<SaveMessage, Message> for Daemon {
                     };
                     if let Err(err) = config.save(&path) {
                         error!("Error occured while saving: {err:#?}");
-                    };
+                    }
                     Task::none()
                 })
             }

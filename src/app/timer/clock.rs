@@ -48,7 +48,7 @@ impl Clock {
         if let TickState::Ticking { last_tick } = self.state {
             self.elapsed += last_tick.elapsed();
             self.state = TickState::Idle;
-        };
+        }
     }
 
     pub fn on(&mut self) {
@@ -56,7 +56,7 @@ impl Clock {
             self.state = TickState::Ticking {
                 last_tick: Instant::now(),
             };
-        };
+        }
     }
 }
 

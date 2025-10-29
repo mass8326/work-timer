@@ -37,6 +37,17 @@ windows = { version = "0.62.2", features = [
 windows-core = "0.62.2"
 winsafe = { version = "0.0.26", features = ["kernel", "user"] }
 
+[dev-dependencies.cargo-husky]
+version = "1"
+default-features = false
+features = [
+  "precommit-hook",
+  "run-cargo-check",
+  "run-cargo-clippy",
+  "run-cargo-fmt",
+  "run-cargo-test",
+]
+
 [lints.clippy]
 pedantic = { level = "deny", priority = -1 }
 match_bool = "allow"
