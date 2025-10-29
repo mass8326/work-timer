@@ -13,7 +13,8 @@ impl UpdateFrom<SettingsMessage, Message> for Settings {
     fn update_from(&mut self, msg: SettingsMessage) -> Task<Message> {
         match msg {
             SettingsMessage::WhitelistToggle(path) => {
-                self.whitelist.lock().unwrap().toggle(path);
+                let mut state = self.config.lock().unwrap();
+                state.whitelist.toggle(path);
                 Task::done(SaveMessage::SaveCurrent.into())
             }
         }

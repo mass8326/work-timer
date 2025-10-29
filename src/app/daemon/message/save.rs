@@ -36,11 +36,11 @@ impl UpdateFrom<SaveMessage, Message> for Daemon {
                     .and_then(|file| Task::done(SaveMessage::Save(file.into()).into()))
             }
             SaveMessage::Save(path) => {
-                let save_data = self.create_config();
+                let snapshot = self.config.lock().unwrap().clone();
                 window::get_position(self.timer.get_window_id()).then(move |point| {
                     let config = Config {
                         last_pos: point.map(Into::into),
-                        ..save_data.clone()
+                        ..snapshot.clone()
                     };
                     if let Err(err) = config.save(&path) {
                         error!("Error occured while saving: {err:#?}");

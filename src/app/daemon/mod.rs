@@ -6,14 +6,9 @@ use std::sync::Mutex;
 
 use crate::assets::fonts::FONT_MONSERRAT;
 use crate::state::Config;
-use crate::state::Whitelist;
 
 use iced::font;
-use iced::{
-    window::{self, Level},
-    Element, Subscription, Task, Theme,
-};
-use rust_decimal::{prelude::*, Decimal, RoundingStrategy};
+use iced::{window, Element, Subscription, Task, Theme};
 
 use super::settings::Settings;
 use super::timer::Timer;
@@ -24,7 +19,7 @@ pub use message::*;
 pub struct Daemon {
     project_file: Option<PathBuf>,
     settings_id: Option<window::Id>,
-    whitelist: Arc<Mutex<Whitelist>>,
+    config: Arc<Mutex<Config>>,
     timer: Timer,
     settings: Settings,
     theme: Theme,
@@ -33,13 +28,13 @@ pub struct Daemon {
 impl Daemon {
     pub fn new(project_file: Option<PathBuf>) -> (Self, Task<Message>) {
         let (config, fallback) = Config::load_or_fallback(project_file.as_ref());
-        let whitelist = Arc::new(Mutex::new(config.whitelist.clone().unwrap_or_default()));
-        let settings = Settings::new(whitelist.clone());
-        let (timer, task) = Timer::new(&config, &whitelist);
+        let config = Arc::new(Mutex::new(config));
+        let settings = Settings::new(&config);
+        let (timer, task) = Timer::new(&config);
         (
             Self {
                 project_file: project_file.or(fallback),
-                whitelist,
+                config,
                 timer,
                 settings,
                 theme: match dark_light::detect() {
@@ -92,19 +87,5 @@ impl Daemon {
             }
         }
         self.timer.view().map(Into::into)
-    }
-
-    fn create_config(&self) -> Config {
-        let whitelist = self.whitelist.lock().unwrap().clone();
-        let on_top = Some(self.timer.get_window_level() == Level::AlwaysOnTop);
-        let elapsed = Decimal::from_f32(self.timer.get_elapsed().as_secs_f32()).map(|decimal| {
-            decimal.round_dp_with_strategy(3, RoundingStrategy::MidpointAwayFromZero)
-        });
-        Config {
-            elapsed,
-            on_top,
-            last_pos: None,
-            whitelist: Some(whitelist),
-        }
     }
 }

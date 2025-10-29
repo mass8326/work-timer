@@ -32,21 +32,19 @@ impl UpdateFrom<LoadMessage, Message> for Daemon {
                     .and_then(|file| Task::done(LoadMessage::Load(file.into()).into()))
             }
             LoadMessage::Load(path) => {
-                let Ok(config) = Config::load(&path) else {
+                let Ok(loaded) = Config::load(&path) else {
                     return Task::none();
                 };
-                let elapsed = config
+                self.project_file = Some(path);
+                let elapsed = loaded
                     .elapsed
                     .as_ref()
                     .and_then(Decimal::to_f32)
                     .map(Duration::from_secs_f32)
                     .unwrap_or_default();
                 self.timer.set_elapsed(elapsed);
-                self.whitelist
-                    .lock()
-                    .unwrap()
-                    .set(config.whitelist.unwrap_or_default().into());
-                self.project_file = Some(path);
+                let mut state = self.config.lock().unwrap();
+                *state = loaded;
                 Task::done(TimerMessage::SetView(View::Clock).into())
             }
         }

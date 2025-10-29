@@ -8,7 +8,7 @@ use iced::{Alignment, Element, Length};
 use iced_core::text::Wrapping;
 
 use crate::platform::{Platform, PlatformAPI, WindowInfo};
-use crate::state::Whitelist;
+use crate::state::Config;
 
 use super::widget::centered_text_button;
 
@@ -17,13 +17,16 @@ pub use message::SettingsMessage;
 #[derive(Debug, Default)]
 pub struct Settings {
     windows: Vec<WindowInfo>,
-    whitelist: Arc<Mutex<Whitelist>>,
+    config: Arc<Mutex<Config>>,
 }
 
 impl Settings {
-    pub fn new(whitelist: Arc<Mutex<Whitelist>>) -> Self {
+    pub fn new(config: &Arc<Mutex<Config>>) -> Self {
         let windows = Platform::get_all_window_info().unwrap_or_default();
-        Self { windows, whitelist }
+        Self {
+            windows,
+            config: config.clone(),
+        }
     }
 
     pub fn view(&self) -> Element<'_, SettingsMessage> {
@@ -36,8 +39,8 @@ impl Settings {
                 info.path.to_string_lossy()
             )
             .wrapping(Wrapping::None);
-            let whitelist = self.whitelist.lock().unwrap();
-            let style = match whitelist.has(&path) {
+            let guard = self.config.lock().unwrap();
+            let style = match guard.whitelist.has(&path) {
                 true => button::primary,
                 false => button::secondary,
             };

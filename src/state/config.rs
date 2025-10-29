@@ -15,13 +15,16 @@ use serde::{
     Deserialize, Deserializer, Serialize, Serializer,
 };
 
+use super::TimerPrecision;
+
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Config {
     /// In seconds, rounded to nearest tenth place
     pub elapsed: Option<Decimal>,
     pub last_pos: Option<Position>,
-    pub on_top: Option<bool>,
-    pub whitelist: Option<Whitelist>,
+    pub on_top: bool,
+    pub whitelist: Whitelist,
+    pub precision: TimerPrecision,
 }
 
 impl Config {
@@ -68,9 +71,10 @@ impl Default for Config {
     fn default() -> Self {
         Self {
             elapsed: None,
-            on_top: Some(true),
+            on_top: true,
             last_pos: None,
-            whitelist: Some(Whitelist::default()),
+            whitelist: Whitelist::default(),
+            precision: TimerPrecision::default(),
         }
     }
 }

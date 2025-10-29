@@ -58,13 +58,16 @@ impl UpdateFrom<TimerMessage, Message> for Timer {
                     self.clock.off();
                     return Task::none();
                 };
+                if !self
+                    .config
+                    .lock()
+                    .unwrap()
+                    .whitelist
+                    .has(&PathBuf::from(&window.path))
                 {
-                    let whitelist = self.whitelist.lock().unwrap();
-                    if !whitelist.has(&PathBuf::from(&window.path)) {
-                        self.clock.off();
-                        return Task::none();
-                    }
-                };
+                    self.clock.off();
+                    return Task::none();
+                }
                 if state.idle_time > IDLE_TIME_LIMIT_MS {
                     self.clock.off();
                     return Task::none();

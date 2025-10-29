@@ -17,7 +17,7 @@ use rust_decimal::prelude::*;
 use widget::{clock, danger_controls, safe_controls};
 
 use crate::platform::{ActivityInfo, Platform, PlatformAPI};
-use crate::state::{Config, Whitelist};
+use crate::state::Config;
 
 use super::Message;
 pub use message::TimerMessage;
@@ -36,15 +36,16 @@ pub struct Timer {
     window_level: Level,
     clock: Clock,
     view: View,
-    whitelist: Arc<Mutex<Whitelist>>,
+    config: Arc<Mutex<Config>>,
     window_id: window::Id,
 }
 
 impl Timer {
-    pub fn new(config: &Config, whitelist: &Arc<Mutex<Whitelist>>) -> (Self, Task<window::Id>) {
-        let level = match config.on_top {
-            Some(false) => Level::Normal,
-            _ => Level::AlwaysOnTop,
+    pub fn new(config: &Arc<Mutex<Config>>) -> (Self, Task<window::Id>) {
+        let state = config.lock().unwrap();
+        let level = match state.on_top {
+            false => Level::Normal,
+            true => Level::AlwaysOnTop,
         };
         let (id, task) = window::open(window::Settings {
             size: Size {
@@ -52,7 +53,7 @@ impl Timer {
                 height: 60_f32,
             },
             level,
-            position: config
+            position: state
                 .last_pos
                 .clone()
                 .map(Into::into)
@@ -62,7 +63,7 @@ impl Timer {
             decorations: false,
             ..Default::default()
         });
-        let seconds = config
+        let seconds = state
             .elapsed
             .as_ref()
             .and_then(ToPrimitive::to_f32)
@@ -73,18 +74,18 @@ impl Timer {
             window_level: level,
             clock: seconds.into(),
             view: View::default(),
-            whitelist: whitelist.clone(),
             window_id: id,
+            config: config.clone(),
         };
-        let on_top = config.on_top;
+        let on_top = state.on_top;
         (
             created,
             task.then(move |id| {
                 // Window may not be created as always on top
                 // Attempt to set it after creation as well just in case
                 match on_top {
-                    Some(false) => Task::none(),
-                    _ => window::change_level(id, Level::AlwaysOnTop),
+                    false => Task::none(),
+                    true => window::change_level(id, Level::AlwaysOnTop),
                 }
             }),
         )
@@ -109,7 +110,10 @@ impl Timer {
     pub fn view(&self) -> Element<'_, Message> {
         mouse_area(
             center(match self.view {
-                View::Clock => clock(self.clock.get_elapsed()),
+                View::Clock => clock(
+                    self.clock.get_elapsed(),
+                    &self.config.lock().unwrap().precision.clone(),
+                ),
                 View::Controls => safe_controls(self.window_level),
                 View::Danger => danger_controls(),
             })
@@ -126,20 +130,12 @@ impl Timer {
         .into()
     }
 
-    pub fn get_elapsed(&self) -> &Duration {
-        self.clock.get_elapsed()
-    }
-
     pub fn set_elapsed(&mut self, duration: Duration) {
         self.clock.set_elapsed(duration);
     }
 
     pub fn get_window_id(&self) -> window::Id {
         self.window_id
-    }
-
-    pub fn get_window_level(&self) -> window::Level {
-        self.window_level
     }
 
     fn get_border_style(&self) -> container::Style {

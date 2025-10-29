@@ -8,21 +8,33 @@ use crate::app::{DaemonMessage, LoadMessage, Message, SaveMessage, WindowMessage
 use crate::assets::icons::{
     ICON_CLOSE, ICON_FILE_OPEN, ICON_LAYER, ICON_RESET, ICON_SAVE, ICON_SETTINGS,
 };
+use crate::state::TimerPrecision;
 
 use super::super::widget::icon_button;
 use super::TimerMessage;
 
-pub fn clock<'a, Message: 'a>(duration: &'a Duration) -> Element<'a, Message> {
+pub fn clock<'a, Message: 'a>(
+    duration: &'a Duration,
+    precision: &TimerPrecision,
+) -> Element<'a, Message> {
     const MINUTE: u64 = 60;
     const HOUR: u64 = 60 * MINUTE;
     let seconds = duration.as_secs();
-    let inner = text!(
-        "{:0>2}:{:0>2}:{:0>2}.{:0>1}",
-        seconds / HOUR,
-        (seconds % HOUR) / MINUTE,
-        seconds % MINUTE,
-        duration.subsec_millis() / 100
-    )
+    let inner = match precision {
+        TimerPrecision::Decisecond => text!(
+            "{:0>2}:{:0>2}:{:0>2}.{:0>1}",
+            seconds / HOUR,
+            (seconds % HOUR) / MINUTE,
+            seconds % MINUTE,
+            duration.subsec_millis() / 100
+        ),
+        TimerPrecision::Second => text!(
+            "{:0>2}:{:0>2}:{:0>2}",
+            seconds / HOUR,
+            (seconds % HOUR) / MINUTE,
+            seconds % MINUTE,
+        ),
+    }
     .size(40)
     .center();
     column![inner]
